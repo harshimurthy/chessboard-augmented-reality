@@ -1,0 +1,10 @@
+cmake_minimum_required(VERSION 2.8)
+PROJECT( opencv_gl )
+FIND_PACKAGE( OpenCV )
+FIND_PACKAGE( OpenGL )
+FIND_PACKAGE( GLU )
+FIND_PACKAGE( GLUT )
+SET(opencv_gl opencv_gl.cpp )
+ADD_EXECUTABLE( opencv_gl ${opencv_gl} )
+TARGET_LINK_LIBRARIES( opencv_gl ${OpenCV_LIBS} ${OpenGL_LIBRARY} ${GLU_LIBRARY} ${GLUT_LIBRARY})
+
