@@ -1,0 +1,129 @@
+ Assignment 1: OpenCV Camera Calibration and OpenGL Augmentation
+Change Log:
+Tue., Oct. 6: original post
+
+For this assignment, you will familiarize yourself with the OpenCV and OpenGL libraries by calibrating a camera using a checkerboard. OpenCV and OpenGL are two of the most common tools used by researchers for vision, image processing, and augmented reality applications. Through this assignment you will:
+
+    Build and install OpenCV and OpenGL libraries
+    Familiarize yourself with the basic functions, data structures, and uses for these libraries
+    Follow a simple camera calibration technique using OpenCV
+    Implement a very first Augmented Reality demo
+    Apply your understanding of camera calibration to calibrate your own webcam/camera
+
+The assignment has been broken into the following sections. Please read all of the instructions before beginning the assignment. In particular, you can save yourself a lot of time and headaches if you read the instructions carefully before installing the libraries.
+1. Install OpenCV library
+Instructions for installing OpenCV can be found at several places on the internet and there are quite a few different approaches to getting it done on your own Linux, Windows, or MacOS computers. We strongly recommend to use the last know stable version, which currently is 3.0. The code and procedures on this web page are currently only checked with 2.4.10 (If you use the Homebrew package management system on Mac, it will install 2.4.9, for which the code works as well).
+
+No matter how you get your installation done, we strongly recommend the use of cmake for your assignments. If you don't have CMake on your system, install it from cmake.org. It is sufficient to use the binary cmake distribution for your platform. Also, take 15 minutes to familiarize yourself with CMake, e.g. by going over the FAQ. In addition to using CMake and command-line development, you are also welcome to use an IDE of your choice. We do not require you to use an IDE, but you are allowed to use any one you fancy. If you plan to do some Android development later on in this course (we will give you the option to do so), using Eclipse and the Android plugin is probably a good choice, as Eclipse will be our recommended IDE for Android.
+CSIL
+CMake and OpenCV are already installed for you on CSIL, so you can go directly to Testing OpenCV
+Your own Linux system
+If the simple packaging way to install openCV (sudo apt-get install opencv) doesn't work, follow these instructions from the OpenCV documentation to install the library using CMake on your linux system in 2 or 3 steps: 
+
+    Installation in Linux,
+    Using OpenCV with gcc and CMake,
+    (optional) Using OpenCV with Eclipse (plugin CDT)
+
+Your own Windows system
+You can use MinGW or Visual Studio for your development. MinGW has the advantage that you would be using the same GNU compilers as on CSIL. Visual Studio is obviously a more elaborate IDE. Note that Visual Studio, like a lot of other Microsoft software, is freely available to you.
+
+    If you want to go with the Visual Studio compilers, follow these instructions from the OpenCV documentation to install the library using CMake on your windows system: 
+
+        Installation in Windows
+        How to build applications with OpenCV inside the Microsoft Visual Studio
+         
+    If you want to go with the more minimalist MinGW approach, install  MinGW from www.mingw.org, and then follow these instructions (we have some time adgo also been successful in installing OpenCV without Code::Blocks simply by running cmake and mingw32-make within the MinGW shell, from a build directory that is a sibling of the source directory:
+    cd <OpenCV_ROOT>/..; mkdir release; cd release; cmake -G "MinGW Makefiles" <OpenCV_ROOT>; mingw32_make
+
+Your own MacOS system
+
+The following approaches worked well for us:
+
+    Installation via Homebrew
+    Installation via Macports
+    Compiling with CMake:
+        Install CMake from www.cmake.org
+        Download and unpack the 2.4.X sources from here, and in Terminal.app cd to the OpenCV-2.4.X directory
+        Then follow these instructions. Instead of  "Unix Makefiles" as the cmake generator, you can also generate an XCode project file. 
+         
+
+2. Test OpenCV library with first programs
+After you finish installing OpenCV, you should test it using one of the sample applications, and you should write your first own HelloWorld program.
+
+    Test with 'morphology' example:
+        Create a folder OpenCVTest. Copy baboon.jpg and morphology.c from the samples folder in (<OpenCV_ROOT>/samples/c/) into OpenCVTest. On CSIL (and any other platform that has wget), you can copy the two files using these commands:
+
+        wget --no-check-certificate https://code.ros.org/trac/opencv/export/37/trunk/opencv/samples/c/baboon.jpg
+        wget --no-check-certificate https://code.ros.org/trac/opencv/export/37/trunk/opencv/samples/c/morphology.c
+
+        In the same directory, create a file CMakeLists.txt containing the following lines
+
+        PROJECT( morphology )
+        FIND_PACKAGE( OpenCV REQUIRED )
+        SET(MySources morphology.c )
+        ADD_EXECUTABLE( morphology ${MySources} )
+        TARGET_LINK_LIBRARIES( morphology ${OpenCV_LIBS} )
+        SET_SOURCE_FILES_PROPERTIES(${MySources} PROPERTIES LANGUAGE CXX )
+
+        Then issue the commands "cmake ." and  "make" (or mingw32-make for MinGW)
+
+        If you want to compile the morphology program without CMake on CSIL you could also simply issue the command
+
+        g++ -o morphology morphology.c -lopencv_core -lopencv_highgui -lopencv_imgproc 
+
+        but on other platforms, this may differ a bit.
+         
+        Run the resulting program as "./morphology"
+         
+    Create your own HelloOpenCV example:
+         Create a program such as the one in this example, create a corresponding CMakeLists.txt, and compile it using cmake and make.
+
+If these sample programs do not work, STOP IMMEDIATELY. You have most likely installed OpenCV incorrectly. Reread the installation instructions, and do not continue until you have properly installed OpenCV and can successfully get sample programs to run.  
+
+ 
+
+3. Implement Camera Calibration
+
+As an introducing exercise of programming with OpenCV, you are tasked to calibrate the camera that took this set of images with OpenCV calibration routines.  The video on which you can test the calibration is available as checkerboard.mov (Quicktime H264) or checkerboard.avi (DivX codec).
+
+    For each image, use the findChessboardCorners method to obtain 2D locations of chessboard corners (locations where a black square meets a black square).  Here we denote the chessboard corners as xij for corner i and camera image j.
+     
+    Specify 3D locations for the corners (e.g. Xi = [0 0 0], [1 0 0], [2 0 0], ..., [0 1 0]... ).
+    The result of camera calibration is to find parameters K, Ri, ti such that
+                                        xij = proj( K [ Rj | tj ] Xi )
+                                        where proj( [U V W] ) = [ U/W, V/W ] for all corners I = 1...M and camera images j = 1...N. 
+    K is the matrix of intrinsic parameters shared by all camera images and [ Rj | tj ] is the matrix of extrinsic parameters for camera image j.
+     
+    Pass the 3D corner points and 2D corner locations to the calibrateCamera method to calculate the camera matrices and distortion coefficients.  Use the four-element  distortion coefficient model.
+     
+    Calculate re-projection error using estimated coefficients:
+    In order to verify the results of our calibration, we can calculate the re-projection error. By using the estimated camera matrices, we can project the 3D points for chessboard corners back to 2D image points. Comparing the projected points with the extracted chessboard corners gives an error metric for the calibration procedure.
+    Use the projectPoints method to project the 3D checkerboard corners to 2D points for each image.  Then compute the total re-projection error (sum squared difference or SSD):
+                                                    err = sumij( ||xij – proj( K [ Rj | tj ] Xi )||2 )
+
+    Also compute the average error in pixels:
+                                                    avg pixel error = sqrt( meanij(||xij – proj( K [ Rj | tj ] Xi )||2 ) )
+
+More details for the abovementioned functions and more can be found at http://opencv.itseez.com/modules/calib3d/doc/camera_calibration_and_3d_reconstruction.html
+
+Once you have calibrated the test images, you should calibrate your own camera. Print out this checkerboard pattern and take several pictures of it from different angles (make sure that your printout stays flat while acquiring images).
+
+Run the same calibration technique for the images taken with your camera.
+
+Write out the following intrinsic camera parameters in a small text file, with one parameter per line (some of these you will need in the OpenGL part of the assignment): horizontal field of view, vertical field of view, focal length (assuming 1.0f using 0.0f for both apertureWidth and apertureHeight), principal point, aspect ratio parameters fx and fy, and distortion parameters k1, k2, p1, and p2.
+
+Report all results and answer the following questions in a README.TXT: 
+
+    How do the intrinsic calibration parameters of your camera compare to the camera for the image sequence we provided (e.g. argue which camera lens has a wider angle, which one more distortion, and distortion of what kind)?
+    How does the average error compare? Can you explain the difference in error?
+
+ 
+4. Augment images with OpenGL renderings
+
+For this part, you will use OpenGL to overlay different kinds of 3D graphics on top of the calibration images (and on top of live feeds from your own cameras). The two augmentations we want you to add to the scene are: a) Small spheres at the checkerboard corners and b) the GLUT teapot.
+
+More details on OpenGL installation and hints are here ...
+
+ 
+Submission
+All code and results must be submitted by 11:59pm on Thu Oct 15th Fri, Oct 16th. You are free to develop on your own platform, but all code must be able to run on the CSIL machines in order to receive proper credit. CSIL machines are already equipped with OpenCV and OpenGL libraries installed. Remember to cite any sources used! 

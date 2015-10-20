@@ -1,0 +1,65 @@
+Install OpenGL library
+For installing OpenGL, again, make sure you follow the instructions carefully. In this section, we will point you to verified approaches to get going with OpenGL on CSIL and your own Linux, Windows, or MacOS computers. OpenGL is available for all modern operating systems, but you will need to make sure you have the latest drivers for your computer GPU in order for it to work properly, or install a software-only implementation (e.g. Mesa).
+
+Once you have the proper libraries installed, you will need to link those libraries and include the proper header files for OpenGL/GLUT development
+CSIL
+OpenGL is already installed for you on CSIL. Include the following header files:
+
+	#include <GL/gl.h>
+	#include <GL/glu.h>  
+	#include <GL/glut.h>
+
+Additionally, you will need to point the linker to several libraries. This can be accomplished with CMake by adding the following lines to your CMakeLists.txt
+
+	FIND_PACKAGE( OpenGL )
+	FIND_PACKAGE( GLU )
+	FIND_PACKAGE( GLUT )
+
+and update your target link libraries to also include ${OpenGL_LIBRARY}, ${GLU_LIBRARY} and ${GLUT_LIBRARY}.
+
+Alternatively, for command-line compilation/linking, you can use the following flags for g++ or ld: "-lGL -lGLU -lglut". X11 libraries (-L/usr/X11R6/lib/ -lXmu -lXi -lXext -lX11 -lXt) apparently don't currently need to be specified.
+Your own Linux system or Windows system
+Both Linux and Windows system will likely require you to download drivers specific to your graphics card. Unfortunately, these drivers are not consistent in their installation and will likely install in different folders on your machine depending on which driver you need. Instructions for downloading and installing these drivers can be found on the OpenGL website. Linux and Windows users will also likely need to install GLUT. If you are developing under MinGW, you can follow these instructions.
+
+On your own Linux system, the include and library specifications are likely similar to the ones on CSIL.
+On Windows, you will likely have to link against the libraries opengl32.lib, glut32.lib, glu32.lib that were installed in previous steps. This can be done both with MinGW and CMake or within an IDE such as Visual Studio. You will have to include the following lines in source code:
+
+#include <gl/gl.h>
+#include <gl/glu.h>
+#include <gl/glut.h>
+#include <windows.h>
+		
+
+Your own MacOS system
+Luckily, MacOS installs OpenGL as part of the OS, and OpenGL updates are pushed with regular software updates. Before beginning, make sure you have the latest software update on your Mac.
+Your include lines on this platform should be:
+
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
+
+If you want to compile/link from the Terminal command line, add the following flags: -framework OpenGL -framework GLUT
+ 
+
+Rendering Spheres with OpenGL
+Using your knowledge of the real camera parameters gained from your OpenCV camera calibration, you will use OpenGL to render spheres at the inner corners on the chessboard. We have provided you with this basic skeleton file for an integrated OpenCV/OpenGL application to help you get started. A corresponding CMakeLists.txt is here. Currently, the skeleton program uses OpenCV to provide camera streams (either from an integrated/attached web cam or from playback of a video file provided as a command-line parameter) and uses OpenGL to render these camera frames to an OpenGL viewport. It also places a 3D teapot (flat shaded, unlit) and coordinate axes in the center of the viewport. 
+
+A movie of a moving camera observing the calibration pattern can be found on CSIL at /cs/sandbox/faculty/holl/checkerboard.avi. Unfortunately, to be usable across platforms, the movie had to be uncompressed, and thus the file is ~600MB large. Don't copy it to your own csil accounts, but instead just use the whole path as the command line parameter:
+opengl_cv /cs/sandbox/faculty/holl/checkerboard.avi
+
+The main challenge to this part of the assignment will be to align the OpenCV and OpenGL coordinate systems, which is most easily accomplished by setting up an OpenGL camera that uses the measured intrinsic and extrinsic parameters from the real camera. For the intrinsic parameters, read in the small text file that you wrote out during camera calibration. Undistort the camera image according to the four undistortion parameters before you display the background image. Use OpenCV calls to determine the extrinsic parameters on a frame-by-frame basis. 
+
+During OpenCV calibration of your camera, you assigned 3D world coordinates to the chessboard corners (Xi = [0 0 0], [1 0 0], [2 0 0], ..., [0 1 0]...). These denote your world coordinates for OpenGL.
+Create two different Augmented Reality overlays for your input frames, which can be alternated between by pressing the space bar:
+
+    Render a sphere at each chessboard corner with the glutSolidSphere(...) command.
+    Render a teapot hovering over the center of the calibration pattern (glutSolidTeapot(...))
+
+Hints:
+
+    Setting the projection matrix — In order to properly map a 3D scene in OpenGL to our 2D monitor displays, we need to specify the perspective projection by using intrinsic camera parameters. We recommend you use the gluPerspective function, which takes a fovy (field of view angle in degrees in the y direction), the aspect ratio, and near and far planes. fovy and aspect ratio come from your camera calibration. Near and far clipping planes can be arbitrarily chosen. They are expressed in your world coordinate units and should be set such that the calibration board augmentations are never clipped (try  0.05 and 500 for a start).
+    Setting the modelview matrix — The final step for translating our OpenCV coordinates to OpenGL is to set the modelview matrix. This can be set using the extrinsic camera parameters you determine with OpenCV calls on a frame-by-frame basis. Which OpenCV calls to use? Well, you already know findCheckerboardCorners() from the calibration step. We suggest that you also check out the OpenCV function solvePnP(). It has similar arguments to calibrateCamera(), but accepts intrinsic parameters as input rather than trying to solve for them. And you already know the intrinsic parameters, having read them from your calibration text file...
+    You need to account for the fact that OpenCV uses a differently oriented coordinate system than OpenGL a right-handed one.  The command glScalef(1.0,-1.0,-1.0) can help you here!
+    Remember that you can save current transformation state using the glPushMatrix() command. Similarly, you can restore this matrix with the glPopMatrix() command after you finished drawing what you wanted.
+
+
