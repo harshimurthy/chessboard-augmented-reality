@@ -65,12 +65,12 @@ make
 (this switches on the camera. when the user shows a chessboard to the camera and presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)
 
 **Procedure to run video chessboard**
-include all the above files in a folder
-in terminal:
-cd (to the directory where the contents are present)
-cmake .
-make
-./opencv_gl checkerboard.avi
+include all the above files in a folder  
+in terminal:  
+cd (to the directory where the contents are present)  
+cmake .  
+make  
+./opencv_gl checkerboard.avi  
 
 (this displays the video. when the user  presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)
 
