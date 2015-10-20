@@ -1,68 +1,68 @@
 # chessboard-augmented-reality
-Code to calibrate the laptop camera and the video camera provided . Place spheres at the corner of chessboards and place a teapot at the center of the chessboard
+Code to calibrate the laptop camera and the video camera provided . Place spheres at the corner of chessboards and place a teapot at the center of the chessboard.  
 
 
 ###Requirements:
 
-OpenCV library
-OpenGL library
-cmake
-video/webcam
-chessboard pattern
+OpenCV library  
+OpenGL library  
+cmake  
+video/webcam  
+chessboard pattern  
 
 ###Description:
 
-####camera_calibration folder:
-calibrates the web cam by taking a set of pictures as input and displaying the calibration values
-CMakeLists.txt : contains library and this is what is invoked when user calls cmake .
-VID5.xml : contains image locations(take images from your camera and place it in a folder and include path as mentioned in the folder)
-in_VID5.xml : initialize the file and calls VID5.xml
-main.cpp: main program which does all the calibration and displays intrinsic parameters to the console.
-out_camera_data.xml : file where all the parameters are stored
+####camera_calibration folder:   
+calibrates the web cam by taking a set of pictures as input and displaying the calibration values  
+CMakeLists.txt : contains library and this is what is invoked when user calls cmake .  
+VID5.xml : contains image locations(take images from your camera and place it in a folder and include path as mentioned in the folder)  
+in_VID5.xml : initialize the file and calls VID5.xml  
+main.cpp: main program which does all the calibration and displays intrinsic parameters to the console.  
+out_camera_data.xml : file where all the parameters are stored  
 
 **procedure to run**
 include all the above files along with the images in a folder
-in terminal:
-cd (to the directory where the contents are present)
-cmake .
-make
-./main in_VID5.xml
+in terminal:  
+cd (to the directory where the contents are present)  
+cmake .  
+make  
+./main in_VID5.xml  
 
 ####video_calibration folder:
- calibrates the video by taking a set of pictures as input and displaying the calibration values
-CMakeLists.txt : contains library and this is what is invoked when user calls cmake .
-VID5.xml : contains image locations(as present in the folder)
-in_VID5.xml : initialize the file and calls VID5.xml
-main.cpp: main program which does all the calibration and displays intrinsic parameters to the console.
-out_camera_data.xml : file where all the parameters are stored
+ calibrates the video by taking a set of pictures as input and displaying the calibration values  
+CMakeLists.txt : contains library and this is what is invoked when user calls cmake .  
+VID5.xml : contains image locations(as present in the folder)  
+in_VID5.xml : initialize the file and calls VID5.xml  
+main.cpp: main program which does all the calibration and displays intrinsic parameters to the console.  
+out_camera_data.xml : file where all the parameters are stored  
 
 **procedure to run**
-include all the above files in a folder
-in terminal:
-cd (to the directory where the contents are present)
-cmake .
-make
-./main in_VID5.xml
-Camera_calibration
+include all the above files in a folder  
+in terminal:  
+cd (to the directory where the contents are present)  
+cmake .  
+make  
+./main in_VID5.xml  
+Camera_calibration  
 
-####chessboard pattern folder:
- detects the chessboard locations and places solid spheres at each corner when s is pressed and shows a teapot at the center of the chessboard when t is pressed
+####chessboard pattern folder:  
+ detects the chessboard locations and places solid spheres at each corner when s is pressed and shows a teapot at the center of the chessboard when t is pressed    
 
-cam.txt: values after running the camera_calibration main.cpp has to be stored here
-input.txt: values after running the camera_calibration main.cpp has to be stored here
-checkerboard.avi : video which can be used as a input in the terminal while running the program
-CMakeLists.txt : contains library links and executables link
-opencv_gl.cpp: program that perfoms the above mentioned operation
+cam.txt: values after running the camera_calibration main.cpp has to be stored here  
+input.txt: values after running the camera_calibration main.cpp has to be stored here  
+checkerboard.avi : video which can be used as a input in the terminal while running the program  
+CMakeLists.txt : contains library links and executables link  
+opencv_gl.cpp: program that perfoms the above mentioned operation  
 
 **procedure to run webcam chessboard**
-include all the above files in a folder
-in terminal:
-cd (to the directory where the contents are present)
-cmake .
-make
-./opencv_gl
+include all the above files in a folder  
+in terminal:  
+cd (to the directory where the contents are present)  
+cmake .  
+make  
+./opencv_gl    
 
-(this switches on the camera. when the user shows a chessboard to the camera and presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)
+(this switches on the camera. when the user shows a chessboard to the camera and presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)  
 
 **Procedure to run video chessboard**
 include all the above files in a folder  
@@ -70,7 +70,7 @@ in terminal:
 cd (to the directory where the contents are present)  
 cmake .  
 make  
-./opencv_gl checkerboard.avi  
+./opencv_gl checkerboard.avi    
 
-(this displays the video. when the user  presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)
+(this displays the video. when the user  presses S, the program places solid sphere at the corners and shows teapot at the center when t is pressed)  
 
